@@ -37,7 +37,7 @@ NeoBundle 'a.vim'
 NeoBundle 'quanganhdo/grb256'
 NeoBundle 'chriskempson/tomorrow-theme', {'rtp': 'vim'}
 NeoBundle 'chriskempson/base16-vim'
-
+NeoBundle 'altercation/vim-colors-solarized'
 " Auto close pairs
 NeoBundle 'Raimondi/delimitMate'
 

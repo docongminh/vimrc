@@ -44,6 +44,11 @@ let mapleader = ","
 " Works with range
 vnoremap . :norm.<cr>
 
+"Disable arrow keys
+map <up> <nop>
+map <down> <nop>
+map <left> <nop>
+map <right> <nop>
 " Switch between last 2 files
 nnoremap <leader><leader> <c-^>
 
@@ -59,6 +64,8 @@ map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
 map <leader>w <C-w>q
+"Root privileges for edit root-needed files
+cmap w!! w !sudo tee % >/dev/null
 
 " Split more sensibly
 set splitbelow
@@ -82,27 +89,28 @@ set t_Co=256
 
 " For debugging 
 map <c-t> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+			\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+			\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 " base16
-colorscheme base16-ocean
-set background=dark
+" colorscheme base16-ocean
+" set background=dark
 
 " Tomorrow-Night 
-" colorscheme Tomorrow-Night
+colorscheme Tomorrow-Night
 
 hi Search cterm=underline ctermfg=none ctermbg=none
 
-" hi clear SignColumn
-" hi SignifySignAdd cterm=bold ctermbg=none ctermfg=119
-" hi SignifySignDelete cterm=bold ctermbg=none ctermfg=167
-" hi SignifySignChange cterm=bold ctermbg=none ctermfg=227
+hi clear SignColumn
+hi SignifySignAdd cterm=bold ctermbg=none ctermfg=119
+hi SignifySignDelete cterm=bold ctermbg=none ctermfg=167
+hi SignifySignChange cterm=bold ctermbg=none ctermfg=227
 
 " GRB256
 " colorscheme grb256
 
 " Solarized 
+" syntax enable
 " colorscheme solarized
 " hi clear SignColumn
 " set background=dark
@@ -239,7 +247,7 @@ aug test
 				\}
 	for ft_name in keys(ft_stdout_mappings)
 		execute 'au Filetype ' . ft_name . ' nnoremap <buffer> <C-P> :write !'
-				\. ft_stdout_mappings[ft_name] . '<CR>'
+					\. ft_stdout_mappings[ft_name] . '<CR>'
 	endfor
 aug END
 
@@ -277,6 +285,7 @@ aug filetypes
 	au FileType xml set omnifunc=xmlcomplete#CompleteTags
 	au FileType php set omnifunc=phpcomplete#CompletePHP
 	au FileType c set omnifunc=ccomplete#Complete
+	au FileType java set omnifunc=javacomplete#Complete
 
 	" Syntax highlighting
 	au BufRead,BufNewFile *.blade.php set filetype=blade
@@ -287,12 +296,11 @@ aug filetypes
 	au BufRead,BufNewFile *.html,.htm set filetype=html
 	au BufRead,BufNewFile *.rb set filetype=ruby
 	au BufRead,BufNewFile *.vim,.vimrc,.gvimrc set filetype=vim
-
-	" Weirdness
+	au BufNew,BufNewFile *.cpp,.h,.c set filetype=c
 	au BufRead,BufNewFile *.blade.php set fileformat=unix
 aug END
 
-" Open/View files in same directory
+"Open/View files in same directory
 cnoremap %% <C-R>=expand('%:h').'/'<cr>
 map <leader>e :<C-u>edit %%
 
@@ -306,28 +314,28 @@ nmap <leader>= gg=G
 
 " Unite
 let g:unite_win_height = 10
-let g:unite_split_rule = 'botright'
+let g:unite_split_rule = 'topright'
 let g:unite_source_history_yank_enable = 2
 let g:unite_enable_start_insert = 1
 if executable('ag')
 	let g:unite_source_grep_command = 'ag'
 	let g:unite_source_grep_default_opts =
-	\ '--line-numbers --nocolor --nogroup --hidden --ignore ' .
-	\  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+				\ '--line-numbers --nocolor --nogroup --hidden --ignore ' .
+				\  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
 	let g:unite_source_grep_recursive_opt = ''
 endif
 call unite#custom#source('file_rec,file_rec/async', 'max_candidates', 0)
 call unite#custom#source('file_rec,file_rec/async', 'ignore_pattern', join([
-    \ '\.\(git\|svn\|vagrant\)\/', 
-    \ 'tmp\/',
-    \ 'app\/storage\/',
-	\ 'bower_components\/',
-	\ 'fonts\/',
-	\ 'sass-cache\/',
-	\ 'node_modules\/',
-	\ '\.\(jpe?g\|gif\|png\)$',
-	\ ], 
-    \ '\|'))
+			\ '\.\(git\|svn\|vagrant\)\/', 
+			\ 'tmp\/',
+			\ 'app\/storage\/',
+			\ 'bower_components\/',
+			\ 'fonts\/',
+			\ 'sass-cache\/',
+			\ 'node_modules\/',
+			\ '\.\(jpe?g\|gif\|png\)$',
+			\ ], 
+			\ '\|'))
 call unite#filters#matcher_default#use(['matcher_fuzzy', 'matcher_hide_hidden_files', 'matcher_project_files'])
 call unite#filters#sorter_default#use(['sorter_selecta'])
 
@@ -376,9 +384,9 @@ let g:tagbar_autoshowtag = 2
 " syntastic
 let g:syntastic_check_on_open = 3
 let g:syntastic_ignore_files = [
-  \ '\c\.js$',
-  \ '\c\.hbs$',
-  \]
+			\ '\c\.js$',
+			\ '\c\.hbs$',
+			\]
 
 " neosnippet
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
@@ -402,6 +410,13 @@ nnoremap <leader>u :UndotreeToggle<cr>
 " ZoomWin
 nnoremap <leader>z :ZoomWin<cr>
 
+"Quote words under cursor
+nnoremap <leader>" viW<esc>a"<esc>gvo<esc>i"<esc>gvo<esc>3l
+nnoremap <leader>' viW<esc>a'<esc>gvo<esc>i'<esc>gvo<esc>3l
+" Quote current selection
+" TODO: This only works for selections that are created "forwardly"
+vnoremap <leader>" <esc>a"<esc>gvo<esc>i"<esc>gvo<esc>ll
+vnoremap <leader>' <esc>a'<esc>gvo<esc>i'<esc>gvo<esc>ll
 " Vimfiler
 map <C-n> :VimFilerExplorer<CR>
 nmap - :VimFiler -find<CR>
